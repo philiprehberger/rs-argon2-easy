@@ -1,12 +1,16 @@
 # rs-argon2-easy
 
-Dead-simple password hashing with Argon2id — `hash()` and `verify()`, nothing more.
+[![CI](https://github.com/philiprehberger/rs-argon2-easy/actions/workflows/ci.yml/badge.svg)](https://github.com/philiprehberger/rs-argon2-easy/actions/workflows/ci.yml)
+[![Crates.io](https://img.shields.io/crates/v/philiprehberger-argon2-easy.svg)](https://crates.io/crates/philiprehberger-argon2-easy)
+[![License](https://img.shields.io/github/license/philiprehberger/rs-argon2-easy)](LICENSE)
+
+Dead-simple password hashing with Argon2id — `hash()` and `verify()`, nothing more
 
 ## Installation
 
 ```toml
 [dependencies]
-philiprehberger-argon2-easy = "0.1"
+philiprehberger-argon2-easy = "0.1.0"
 ```
 
 ## Usage
@@ -54,13 +58,12 @@ if needs_rehash(&stored_hash)? {
 | `verify(password, hash)` | Verify a password against a hash |
 | `needs_rehash(hash)` | Check if hash uses outdated parameters |
 
-## Profiles
+## Development
 
-| Profile | Memory | Iterations | Parallelism | Use case |
-|---------|--------|------------|-------------|----------|
-| `Interactive` | 19 MiB | 2 | 1 | Login forms |
-| `Default` | 46 MiB | 1 | 1 | General purpose (OWASP) |
-| `Sensitive` | 64 MiB | 3 | 4 | Encryption keys |
+```bash
+cargo test
+cargo clippy -- -D warnings
+```
 
 ## License
 
