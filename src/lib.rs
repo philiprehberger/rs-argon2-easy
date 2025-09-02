@@ -2,6 +2,8 @@
 //!
 //! This crate provides a minimal API for hashing and verifying passwords
 //! using Argon2id with secure defaults. Just call [`hash()`] and [`verify()`].
+//! Use [`timing_safe_eq()`] for constant-time string comparison when comparing
+//! hashes or tokens directly.
 //!
 //! # Example
 //!
@@ -175,6 +177,33 @@ pub fn needs_rehash(hash: &str) -> Result<bool, HashError> {
     Ok(needs_update)
 }
 
+/// Constant-time string comparison to prevent timing attacks.
+///
+/// Returns `true` if the two strings are equal, `false` otherwise.
+/// The comparison always examines every byte to avoid leaking information
+/// about where a mismatch occurs.
+///
+/// # Example
+///
+/// ```
+/// use philiprehberger_argon2_easy::timing_safe_eq;
+///
+/// assert!(timing_safe_eq("same-value", "same-value"));
+/// assert!(!timing_safe_eq("value-a", "value-b"));
+/// ```
+pub fn timing_safe_eq(a: &str, b: &str) -> bool {
+    let a_bytes = a.as_bytes();
+    let b_bytes = b.as_bytes();
+    if a_bytes.len() != b_bytes.len() {
+        return false;
+    }
+    let mut result: u8 = 0;
+    for (x, y) in a_bytes.iter().zip(b_bytes.iter()) {
+        result |= x ^ y;
+    }
+    result == 0
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -253,5 +282,30 @@ mod tests {
         let hashed = hash(password).unwrap();
         assert!(verify(password, &hashed).unwrap());
         assert!(!verify("plain-ascii", &hashed).unwrap());
+    }
+
+    #[test]
+    fn timing_safe_eq_equal_strings() {
+        assert!(timing_safe_eq("hello", "hello"));
+    }
+
+    #[test]
+    fn timing_safe_eq_different_strings() {
+        assert!(!timing_safe_eq("hello", "world"));
+    }
+
+    #[test]
+    fn timing_safe_eq_different_lengths() {
+        assert!(!timing_safe_eq("short", "much-longer"));
+    }
+
+    #[test]
+    fn timing_safe_eq_empty_strings() {
+        assert!(timing_safe_eq("", ""));
+    }
+
+    #[test]
+    fn timing_safe_eq_single_bit_difference() {
+        assert!(!timing_safe_eq("a", "b"));
     }
 }

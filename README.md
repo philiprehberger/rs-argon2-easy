@@ -10,7 +10,7 @@ Dead-simple password hashing with Argon2id — `hash()` and `verify()`, nothing 
 
 ```toml
 [dependencies]
-philiprehberger-argon2-easy = "0.1.1"
+philiprehberger-argon2-easy = "0.2.0"
 ```
 
 ## Usage
@@ -38,6 +38,15 @@ let hashed = hash_with("password", Profile::Interactive)?;
 let hashed = hash_with("password", Profile::Sensitive)?;
 ```
 
+### Constant-time comparison
+
+```rust
+use philiprehberger_argon2_easy::timing_safe_eq;
+
+// Compare tokens or hashes safely without timing leaks
+let is_equal = timing_safe_eq("token-a", "token-b");
+```
+
 ### Check if rehashing is needed
 
 ```rust
@@ -57,6 +66,7 @@ if needs_rehash(&stored_hash)? {
 | `hash_with(password, profile)` | Hash with a specific profile |
 | `verify(password, hash)` | Verify a password against a hash |
 | `needs_rehash(hash)` | Check if hash uses outdated parameters |
+| `timing_safe_eq(a, b)` | Constant-time string comparison |
 
 ## Development
 
