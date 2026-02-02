@@ -13,9 +13,10 @@
 //! assert!(!verify("wrong-password", &hashed).unwrap());
 //! ```
 
-use argon2::{Algorithm, Argon2, Params, PasswordHash, PasswordHasher, PasswordVerifier, Version};
-use password_hash::SaltString;
-use rand_core::OsRng;
+use argon2::{
+    password_hash::{self, phc::PasswordHash, PasswordHasher, PasswordVerifier},
+    Algorithm, Argon2, Params, Version,
+};
 use std::fmt;
 
 /// Preset parameter profiles for Argon2id hashing.
@@ -93,10 +94,9 @@ pub fn hash(password: &str) -> Result<String, HashError> {
 pub fn hash_with(password: &str, profile: Profile) -> Result<String, HashError> {
     let params = profile.params();
     let argon2 = Argon2::new(Algorithm::Argon2id, Version::V0x13, params);
-    let salt = SaltString::generate(&mut OsRng);
 
     let hash = argon2
-        .hash_password(password.as_bytes(), &salt)
+        .hash_password(password.as_bytes())
         .map_err(|e| HashError::HashingFailed(e.to_string()))?;
 
     Ok(hash.to_string())
@@ -123,7 +123,7 @@ pub fn verify(password: &str, hash: &str) -> Result<bool, HashError> {
     let argon2 = Argon2::default();
     match argon2.verify_password(password.as_bytes(), &parsed_hash) {
         Ok(()) => Ok(true),
-        Err(password_hash::Error::Password) => Ok(false),
+        Err(password_hash::Error::PasswordInvalid) => Ok(false),
         Err(e) => Err(HashError::InvalidHash(e.to_string())),
     }
 }
@@ -154,18 +154,18 @@ pub fn needs_rehash(hash: &str) -> Result<bool, HashError> {
     // Extract parameters from the hash
     let m_cost = parsed_hash
         .params
-        .get_str("m")
-        .and_then(|v| v.parse::<u32>().ok())
+        .get("m")
+        .and_then(|v| v.decimal().ok())
         .unwrap_or(0);
     let t_cost = parsed_hash
         .params
-        .get_str("t")
-        .and_then(|v| v.parse::<u32>().ok())
+        .get("t")
+        .and_then(|v| v.decimal().ok())
         .unwrap_or(0);
     let p_cost = parsed_hash
         .params
-        .get_str("p")
-        .and_then(|v| v.parse::<u32>().ok())
+        .get("p")
+        .and_then(|v| v.decimal().ok())
         .unwrap_or(0);
 
     let needs_update = m_cost != default_params.m_cost()
