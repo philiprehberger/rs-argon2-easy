@@ -1,0 +1,15 @@
+[package]
+name = "philiprehberger-argon2-easy"
+version = "0.1.0"
+edition = "2021"
+authors = ["Philip Rehberger"]
+description = "Dead-simple password hashing with Argon2id — hash() and verify(), nothing more"
+license = "MIT"
+repository = "https://github.com/philiprehberger/rs-argon2-easy"
+keywords = ["password", "argon2", "hashing", "security", "auth"]
+categories = ["cryptography", "authentication"]
+
+[dependencies]
+argon2 = "0.5"
+password-hash = "0.5"
+rand_core = { version = "0.6", features = ["getrandom"] }
