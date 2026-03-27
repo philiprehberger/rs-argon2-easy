@@ -3,6 +3,7 @@
 [![CI](https://github.com/philiprehberger/rs-argon2-easy/actions/workflows/ci.yml/badge.svg)](https://github.com/philiprehberger/rs-argon2-easy/actions/workflows/ci.yml)
 [![Crates.io](https://img.shields.io/crates/v/philiprehberger-argon2-easy.svg)](https://crates.io/crates/philiprehberger-argon2-easy)
 [![License](https://img.shields.io/github/license/philiprehberger/rs-argon2-easy)](LICENSE)
+[![Sponsor](https://img.shields.io/badge/sponsor-GitHub%20Sponsors-ec6cb9)](https://github.com/sponsors/philiprehberger)
 
 Dead-simple password hashing with Argon2id — `hash()` and `verify()`, nothing more
 
