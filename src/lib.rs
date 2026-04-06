@@ -15,7 +15,7 @@
 
 use argon2::{Algorithm, Argon2, Params, PasswordHash, PasswordHasher, PasswordVerifier, Version};
 use password_hash::SaltString;
-use rand_core::OsRng;
+use password_hash::rand_core::OsRng;
 use std::fmt;
 
 /// Preset parameter profiles for Argon2id hashing.
